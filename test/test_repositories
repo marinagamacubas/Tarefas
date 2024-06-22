@@ -1,0 +1,31 @@
+import pytest
+from sqlalchemy.orm import Session
+from repository.task_repository import taskRepository
+from domain.model.models import task
+
+@pytest.fixture(scope="module")
+def repository(db: Session):
+    """Fixture para instanciar o repositório de tarefas."""
+    return taskRepository(db)
+
+def test_create_task(repository: taskRepository, db: Session):
+    """Teste para o método create do repositório."""
+    new_task = task(title="Teste de Tarefa", description="Testando a criação de tarefa")
+
+    created_task = repository.create(new_task)
+
+    assert created_task.id is not None
+    assert created_task.title == new_task.title
+    assert created_task.description == new_task.description
+
+def test_read_task(repository: taskRepository, db: Session):
+    """Teste para o método read do repositório."""
+    task_id = 1
+
+    task_found = repository.read(task_id)
+
+    assert task_found is not None
+    assert task_found.id == task_id
+
+if __name__ == "__main__":
+    pytest.main()
